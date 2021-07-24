@@ -53,6 +53,7 @@ public:
 	Vec3 GetPos() const;
 	Vec3 GetBonePos(int index) const;
 	Vec2 GetEyeAngle() const;
+	Vec3 GetVelocity() const;
 protected:
 	uintptr_t* base = nullptr;
 	int* m_iHealth = nullptr;

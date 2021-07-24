@@ -43,6 +43,7 @@ int Entity::GetHealth() const { return *m_iHealth; }
 int Entity::GetTeamNum() const { return *m_iTeamNum; }
 Vec3 Entity::GetPos() const { return *(Vec3*)m_vecOrigin; }
 Vec2 Entity::GetEyeAngle() const  {return *(Vec2*)m_angEyeAngles; }
+Vec3 Entity::GetVelocity() const{ return *(Vec3*)m_vecVelocity; }
 Vec3 Entity::GetBonePos(int index) const {
 	uintptr_t bonePtr = *m_dwBoneMatrix;
 	Vec3 bonePos;
@@ -200,6 +201,13 @@ void Game::DrawESP() {
 			Vec2Int oriPos2D, endPos2D;
 			if (gpu.WorldToScreen(oriHeadPos, oriPos2D, VMatrix) && gpu.WorldToScreen(endPos, endPos2D, VMatrix))
 				gpu.DrawLine(oriPos2D, endPos2D, color);
+
+			// Velocity Line
+			Vec3 entVelocity = ent.GetVelocity();
+			Vec3 endPosVel = gpu.TransformVec(oriHeadPos, eyeAngle, 60.f);
+			Vec2Int velPos2D, velPos3D;
+			if (gpu.WorldToScreen(entVelocity, velPos2D, VMatrix) && gpu.WorldToScreen(endPosVel, velPos3D, VMatrix))
+				gpu.DrawLine(velPos2D, velPos3D, color);
 		}
 		catch (...) {
 			continue;
