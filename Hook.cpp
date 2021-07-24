@@ -3,21 +3,21 @@
 // patch bytes function
 void Hook::Patch(byte* dst, byte* src, size_t size) {
 	DWORD oProc;
-	VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oProc);
+	if (!VirtualProtect(dst, size, PAGE_EXECUTE_READWRITE, &oProc)) throw BHException(__LINE__, __FILE__, GetLastError());
 	memcpy(dst, src, size);
-	VirtualProtect(dst, size, oProc, &oProc);
+	if (!VirtualProtect(dst, size, oProc, &oProc)) throw BHException(__LINE__, __FILE__, GetLastError());
 }
 
 // hook function
 bool Hook::Detour(byte* src, byte* dst, size_t len) {
 	if (len < 5) return false;
 	DWORD oProc;
-	VirtualProtect(src, len, PAGE_EXECUTE_READWRITE, &oProc);
+	if (!VirtualProtect(src, len, PAGE_EXECUTE_READWRITE, &oProc)) throw BHException(__LINE__, __FILE__, GetLastError());
 	memset(src, 0x90, len);
 	uintptr_t relAddy = (uintptr_t)(dst - src - 5);
 	*src = (char)0xE9;
 	*(uintptr_t*)(src + 1) = (uintptr_t)relAddy;
-	VirtualProtect(src, len, oProc, &oProc);
+	if (!VirtualProtect(src, len, oProc, &oProc)) throw BHException(__LINE__, __FILE__, GetLastError());
 	return true;
 }
 

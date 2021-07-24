@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include <stdint.h>
 #include <bitset>
+#include "Settings.h"
 
 class clientInfo
 {
@@ -71,6 +72,20 @@ protected:
 		unsigned int id = 0;
 		int* crosshairEntityId = nullptr;
 	} curWeapon;
+public:
+	class EntityException : public BHException {
+	public:
+		enum errCodeEnum {
+			EntityNotAvaliable,
+			EntityNotValidPlayer,
+			EntityOutOfRange
+		};
+	public:
+		EntityException(int line, const char* file, const char* err, errCodeEnum errcode);
+		const char* GetType() const noexcept;
+		std::string GetErrorString() const noexcept;
+		errCodeEnum errCode;
+	};
 };
 
 class ClientModule : public Module {
@@ -124,15 +139,10 @@ private:
 	friend class ClientModule;
 };
 
-class Game
+class Cheat
 {
 public:
-	bool isRCSOn = false;
-	bool isTriggerbotOn = false;
-	bool isBhopOn = false;
-	bool isESPOn = false;
-public:
-	Game();
+	Cheat();
 	void HandleTriggerbot();
 	void HandleRCS();
 	void HandleBunnyhop();
@@ -141,4 +151,5 @@ public:
 	ClientModule modClient;
 	EngineModule modEngine;
 	Graphics gpu;
+	Settings settings;
 };

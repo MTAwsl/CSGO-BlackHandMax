@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include <d3d9.h>
 
-Game* Graphics::pHax = nullptr;
+Cheat* Graphics::pHax = nullptr;
 RECT Graphics::WndRect = { 0,0,0,0 };
 struct Graphics::WndSize Graphics::WndSize = {0,0};
 std::mutex Graphics::renderMutex;
 
-Graphics::Graphics(Game* ptr) : D3DHook(D3DHook::D3DHook(this)) {
-	pHax = reinterpret_cast<Game*>(ptr);
+Graphics::Graphics(Cheat* ptr) : D3DHook(D3DHook::D3DHook(this)) {
+	pHax = reinterpret_cast<Cheat*>(ptr);
 }
 
 BOOL CALLBACK Graphics::enumWind(HWND handle, LPARAM lp) {
@@ -22,9 +22,10 @@ BOOL CALLBACK Graphics::enumWind(HWND handle, LPARAM lp) {
 
 Graphics::D3DHook::D3DHook(Graphics* ptr){
 	EnumWindows(Graphics::enumWind, NULL);
+	if (hWnd == NULL) throw BHException(__LINE__, __FILE__, "Error when creating D3D9 dummy device: The specific window could not be found.");
 	parentObj = ptr;
-	if(!GetD3D9VMT()) throw "GetD3D9VMT() Failed!";
-	if(!HookEndScene()) throw "HookEndScene() Failed!";
+	if (!GetD3D9VMT()) throw BHException(__LINE__, __FILE__, "GetD3D9VMT() Failed!");
+	HookEndScene();
 }
 
 Graphics::D3DHook::~D3DHook() {
@@ -57,20 +58,22 @@ bool Graphics::D3DHook::GetD3D9VMT() {
 	return true;
 }
 
-bool Graphics::D3DHook::HookEndScene() {
+void Graphics::D3DHook::HookEndScene() {
 	memcpy(originalEndSceneBytes, d3d9VMT[42], sizeof(originalEndSceneBytes));
 	parentObj->originalEndScene = (fEndScene)Hook::TrampHook(d3d9VMT[42], (byte*)hkEndScene, sizeof(originalEndSceneBytes));
-	return true;
+	if (parentObj->originalEndScene == nullptr)
+		throw BHException(__LINE__, __FILE__, GetLastError());
 }
 
-bool Graphics::D3DHook::UnHookEndScene() {
+void Graphics::D3DHook::UnHookEndScene() {
 	Hook::Patch(d3d9VMT[42], originalEndSceneBytes, sizeof(originalEndSceneBytes));
-	return true;
 }
 
 bool Graphics::initD3DDevice(LPDIRECT3DDEVICE9 o_pDevice) {
 	Graphics::pDevice = o_pDevice;
 	D3DXCreateLine(o_pDevice, &Graphics::LineL);
+
+	// Fix hWnd to the Direct3D window
 	D3DDEVICE_CREATION_PARAMETERS pp;
 	o_pDevice->GetCreationParameters(&pp);
 	hWnd = pp.hFocusWindow;

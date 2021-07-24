@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#define NOCONSOLE
 
 // Here is hooked EndScene Function, I made it become a mainloop
 HRESULT APIENTRY Graphics::hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
@@ -8,55 +7,7 @@ HRESULT APIENTRY Graphics::hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
         if (!Graphics::pDevice)
             Graphics::initD3DDevice(o_pDevice);
 
-        // Address Relocation
-        pHax->modClient.init();
-        pHax->modEngine.init();
-        pHax->modClient.localPlayer.init();
-
-        // Keypad Handler
-        if (GetAsyncKeyState(VK_INSERT) & 0x1) {
-            pHax->isRCSOn = !pHax->isRCSOn;
-#ifndef NOCONSOLE
-            const char* logmsg = Hax.isRCSOn ? "RCS is on." : "RCS is off.";
-            std::cout << logmsg << std::endl;
-#endif
-        }
-        if (GetAsyncKeyState(VK_DELETE) & 0x1) {
-            pHax->isBhopOn = !pHax->isBhopOn;
-#ifndef NOCONSOLE
-            const char* logmsg = Hax.isBhopOn ? "Bhop is on." : "Bhop is off.";
-            std::cout << logmsg << std::endl;
-#endif
-        }
-        if (GetAsyncKeyState(VK_PAUSE) & 0x1) {
-            pHax->isTriggerbotOn = !pHax->isTriggerbotOn;
-#ifndef NOCONSOLE
-            const char* logmsg = Hax.isTriggerbotOn ? "Triggerbot is on." : "Triggerbot is off.";
-            std::cout << logmsg << std::endl;
-#endif
-        }
-        if (GetAsyncKeyState(VK_HOME) & 0x1) {
-            pHax->isESPOn = !pHax->isESPOn;
-#ifndef NOCONSOLE
-            const char* logmsg = Hax.isESPOn ? "ESP is on." : "Triggerbot is off.";
-            std::cout << logmsg << std::endl;
-#endif
-        }
-        // Hax Handler
-        if (pHax->isBhopOn)
-            pHax->HandleBunnyhop();
-        if (pHax->isTriggerbotOn)
-            pHax->HandleTriggerbot();
-        if (pHax->isRCSOn)
-            pHax->HandleRCS();
-
-        static DWORD lastResetTime = 0;
-        if (GetTickCount() - lastResetTime >= 100) {
-            pHax->modClient.Reset();
-            lastResetTime = GetTickCount();
-        }
-
-        if (pHax->isESPOn)
+        if (pHax->settings.espMode)
             pHax->DrawESP();
 
         Graphics::renderMutex.unlock();
@@ -66,38 +17,62 @@ HRESULT APIENTRY Graphics::hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 }
 
 void MainThread(HINSTANCE hModule) {
-#ifndef NOCONSOLE
-    AllocConsole();
-    FILE* f;
-    freopen_s(&f, "CONOUT$", "w", stdout);
-#endif
     try {
-        Game Hax;
-        
-#ifndef NOCONSOLE
+        if (!AllocConsole()) throw BHException(__LINE__, __FILE__, (HRESULT)GetLastError());
+        FILE* f;
+        errno_t errnum = freopen_s(&f, "CONOUT$", "w", stdout);
+        if (errnum != 0) throw BHException(__LINE__, __FILE__, (HRESULT)errnum);
+        Cheat Hax;
+        Cheat* pHax = &Hax;
+
         std::cout << "-------- [HAX Logging] -------" << std::endl;
-#endif
         while (!(GetAsyncKeyState(VK_ESCAPE) & 0x1)) {
-            
+            // Address Relocation
+            pHax->modClient.init();
+            pHax->modEngine.init();
+            pHax->modClient.localPlayer.init();
+
+            // Keypad Handler
+            pHax->settings.UpdateKey();
+            // Hax Handler
+            if (pHax->settings.isBhopOn)
+                pHax->HandleBunnyhop();
+            if (pHax->settings.isTriggerbotOn)
+                pHax->HandleTriggerbot();
+            if (pHax->settings.isRCSOn)
+                pHax->HandleRCS();
+
+            // Reset bitfield
+            static DWORD lastResetTime = 0;
+            if (GetTickCount() - lastResetTime >= 100) {
+                pHax->modClient.Reset();
+                lastResetTime = GetTickCount();
+            }
         }
+        if (f)
+            fclose(f);
+        if (!FreeConsole()) throw BHException(__LINE__, __FILE__, GetLastError());
     }
-    catch(const char* msg){
-        MessageBoxA(NULL, msg, "Error!", MB_OK | MB_ICONERROR);
+    catch (BHException& e) {
+        e.Report();
     }
-#ifndef NOCONSOLE
-    fclose(f);
-    FreeConsole();
-#endif
     FreeLibraryAndExitThread(hModule, 0);
     CloseHandle(hModule);
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
-    if (fdwReason == DLL_PROCESS_ATTACH) {
-        DisableThreadLibraryCalls(hinstDLL);
-        HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MainThread, hinstDLL, NULL, NULL);
-        if (hThread)
-            CloseHandle(hThread);
+    try {
+        if (fdwReason == DLL_PROCESS_ATTACH) {
+            DisableThreadLibraryCalls(hinstDLL);
+            HANDLE hThread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)MainThread, hinstDLL, NULL, NULL);
+            if (hThread)
+                CloseHandle(hThread);
+            else
+                throw BHException(__LINE__, __FILE__, GetLastError());
+        }
+    }
+    catch (BHException& e) {
+        e.Report();
     }
     return TRUE;
 }

@@ -6,10 +6,13 @@
 #include <d3dx9.h>
 #include <cstddef>
 #include <mutex>
+#include <exception>
+#include <sstream>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#include "exception.h"
 #include "Game.h"
 #include "Hook.h"
 #include "Graphics.h"

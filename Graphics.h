@@ -4,11 +4,11 @@
 #include <d3dx9.h>
 
 typedef HRESULT(__stdcall* fEndScene)(LPDIRECT3DDEVICE9 device);
-class Game;
+class Cheat;
 
 class Graphics {
 public:
-	Graphics(Game* ptr);
+	Graphics(Cheat* ptr);
 	HWND GetProcessWindow() const;
 	Vec2Int GetWindowSize() const;
 	static bool initD3DDevice(LPDIRECT3DDEVICE9 o_pDevice);
@@ -23,8 +23,8 @@ private:
 		~D3DHook();
 	private:
 		bool GetD3D9VMT();
-		bool HookEndScene();
-		bool UnHookEndScene();
+		void HookEndScene();
+		void UnHookEndScene();
 	private:
 		byte originalEndSceneBytes[7];
 		byte* d3d9VMT[119];
@@ -41,7 +41,7 @@ private:
 		int Height;
 	} WndSize;
 private:
-	static Game* pHax;
+	static Cheat* pHax;
 private:
 	static BOOL CALLBACK enumWind(HWND handle, LPARAM lp);
 protected:
