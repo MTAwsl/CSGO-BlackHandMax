@@ -15,48 +15,48 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="src\Game.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Hook.cpp">
+    <ClCompile Include="src\Hook.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics.cpp">
+    <ClCompile Include="src\Graphics.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Settings.cpp">
+    <ClCompile Include="src\Settings.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="exception.cpp">
+    <ClCompile Include="src\exception.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="includes\Game.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="csgo.h">
+    <ClInclude Include="includes\csgo.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="includes\stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Hook.h">
+    <ClInclude Include="includes\Hook.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.h">
+    <ClInclude Include="includes\Graphics.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="types.h">
+    <ClInclude Include="includes\types.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Settings.h">
+    <ClInclude Include="includes\Settings.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="exception.h">
+    <ClInclude Include="includes\exception.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
