@@ -7,4 +7,5 @@ void Settings::UpdateKey() {
 	REGISTER_SWITCH_KEY(key_RCS, isRCSOn);
 	REGISTER_SWITCH_KEY(key_Triggerbot, isTriggerbotOn);
 	REGISTER_SWITCH_KEY(key_Snapline, isSnaplineOn);
+	REGISTER_SWITCH_KEY(key_Aimbot, isAimbotOn);
 }

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "csgo.h"
+#include "Entity.h"
 
 constexpr int BONE_HEAD = 8;
 
@@ -13,62 +14,8 @@ void Module::init() {}
 
 DWORD Module::GetModuleBase(){ return base; }
 
-ClientModule::ClientModule() : Module(L"client.dll"), localPlayer{Player((uintptr_t*)(GetModuleBase() + signatures::dwLocalPlayer))} {}
+ClientModule::ClientModule() : Module(L"client.dll"), localPlayer{Player((uintptr_t*)*(uintptr_t*)(GetModuleBase() + signatures::dwLocalPlayer))} {}
 EngineModule::EngineModule() : Module(L"engine.dll") {}
-
-// Entity Classes
-Entity::Entity(void* baseparam) {
-	if (baseparam == nullptr) {
-		throw EntityException(__LINE__, __FILE__, "The Entity constructor received nullptr for base address.", EntityException::errCodeEnum::EntityNotAvaliable);
-	}
-	base = (uintptr_t*)baseparam;
-	init();
-}
-
-Entity::EntityException::EntityException(int line, const char* file, const char* err, errCodeEnum errcode) : errCode(errcode), BHException(line, file, err){}
-const char* Entity::EntityException::GetType() const noexcept{ return "EntityException"; }
-std::string Entity::EntityException::GetErrorString() const noexcept {
-	switch (errCode) {
-	case EntityNotAvaliable:
-		return "Entity is not avaliable.";
-	case EntityNotValidPlayer:
-		return "The entity you requested is not a valid player.";
-	case EntityOutOfRange:
-		return "Entity List out of range.";
-	}
-	return "Unknown Error.";
-}
-
-bool Entity::isOnGround() const { return (*m_fFlags) & (1 << 0); }
-bool Entity::isCroughing() const { return (*m_fFlags) & (1 << 1); }
-bool Entity::isJumpingOutOfWater() const { return (*m_fFlags) & (1 << 2); }
-bool Entity::isOnTrain() const { return (*m_fFlags) & (1 << 3); }
-bool Entity::isStandingOnRain() const { return (*m_fFlags) & (1 << 4); }
-bool Entity::isFrozen() const { return (*m_fFlags) & (1 << 5); }
-bool Entity::isAtControls() const { return (*m_fFlags) & (1 << 6); }
-bool Entity::isClient() const { return (*m_fFlags) & (1 << 7); }
-bool Entity::isFakeClient() const { return (*m_fFlags) & (1 << 8); }
-bool Entity::isInWater() const { return (*m_fFlags) & (1 << 9); }
-bool Entity::isMoving() const { return m_vecVelocity->x + m_vecVelocity->y + m_vecVelocity->z;}
-bool Entity::isDormant() const { return *m_bDormant; }
-bool Entity::isValidPlayer() const { return GetHealth() > 0 && !isDormant(); }
-unsigned int Entity::GetCurrentWeapon() const { return curWeapon.id; }
-unsigned int Entity::GetCurrentCrosshair() const { return *curWeapon.crosshairEntityId; }
-uintptr_t Entity::GetBaseAddr() const { return (uintptr_t)base; }
-int Entity::GetShotsFired() const { return *m_iShotsFired; }
-int Entity::GetHealth() const { return *m_iHealth; }
-int Entity::GetTeamNum() const { return *m_iTeamNum; }
-Vec3 Entity::GetPos() const { return *(Vec3*)m_vecOrigin; }
-Vec2 Entity::GetEyeAngle() const  {return *(Vec2*)m_angEyeAngles; }
-Vec3 Entity::GetVelocity() const{ return *(Vec3*)m_vecVelocity; }
-Vec3 Entity::GetBonePos(int index) const {
-	uintptr_t bonePtr = *m_dwBoneMatrix;
-	Vec3 bonePos;
-	bonePos.x = *(float*)(bonePtr + 0x30 * index + 0x0C);
-	bonePos.y = *(float*)(bonePtr + 0x30 * index + 0x1C);
-	bonePos.z = *(float*)(bonePtr + 0x30 * index + 0x2C);
-	return bonePos;
-}
 
 // Player Functions
 ClientModule::Player::Player(void* baseaddr) : Entity(baseaddr) {}
@@ -103,7 +50,7 @@ void EngineModule::SetViewAngle(ViewAngle angle) {
 }
 
 // Hack functions
-Cheat::Cheat() : gpu{ Graphics::Graphics(this) } {}
+Cheat::Cheat() : gpu{ Graphics::Graphics(this) }, Aimbot(Aimbot::Aimbot(this)) {}
 
 void Cheat::HandleTriggerbot() {
 	static unsigned int lastTick = 0;
@@ -141,7 +88,7 @@ void Cheat::DrawESP() {
 		if (!modClient.GetViewMatrix(VMatrix)) return; // initialize VMatrix
 		try {
 			Entity ent = modClient.GetEntity(i); // Get Entity
-			if (!ent.isValidPlayer() || ent.GetBaseAddr() == modClient.GetEntity(0).GetBaseAddr() || ent.GetBaseAddr() == modClient.localPlayer.GetBaseAddr()) // Entity 0 is localEnt (CWorld or localplayer I dont know)
+			if (!ent.isValidPlayer() || ent.GetBaseAddr() == modClient.localPlayer.GetBaseAddr()) // Entity 0 is localEnt (CWorld or localplayer I dont know)
 				continue;
 			Vec3 oriHeadPos;
 			Vec3 headPos = oriHeadPos =ent.GetBonePos(BONE_HEAD);
@@ -176,17 +123,22 @@ void Cheat::DrawESP() {
 				b.z = c.z = d.z = a.z;
 
 				// The bottom rectangle calculation
-				a.x += cosf(eyeAngle.y) * 5.f;
-				a.y += sinf(eyeAngle.y) * 5.f;
+				float deltaAngle = eyeAngle.y + 45.f;
+				if (deltaAngle > 360.f) deltaAngle -= 360.f;
+				else if (deltaAngle < 0.f) deltaAngle += 360.f;
+				float cosResult = cosf(TORAD(deltaAngle)) * 25.f;
+				float sinResult = sinf(TORAD(deltaAngle)) * 25.f;
+				a.x += cosResult;
+				a.y += sinResult;
 
-				b.x = -a.x;
-				b.y = a.y;
+				b.x = playerPos.x - sinResult;
+				b.y = playerPos.y + cosResult;
 
-				c.x = -a.x;
-				c.y = -a.y;
+				c.x = playerPos.x - cosResult;
+				c.y = playerPos.y - sinResult;
 
-				d.x = a.x;
-				d.y = -a.y;
+				d.x = playerPos.x + sinResult;
+				d.y = playerPos.y - cosResult;
 
 				// The top Rectangle
 				a1 = a;
@@ -223,11 +175,11 @@ void Cheat::DrawESP() {
 					gpu.DrawLine(oriPos2D, endPos2D, color);
 
 				// Velocity Line
-				Vec3 entVelocity = ent.GetVelocity();
+				Vec3 entVelocity = playerPos + ent.GetVelocity() * .25f;
 				Vec3 endPosVel = gpu.TransformVec(oriHeadPos, eyeAngle, 60.f);
-				Vec2Int velPos2D, velPos3D;
-				if (gpu.WorldToScreen(entVelocity, velPos2D, VMatrix) && gpu.WorldToScreen(endPosVel, velPos3D, VMatrix))
-					gpu.DrawLine(velPos2D, velPos3D, color);
+				Vec2Int velPos2D;
+				if (gpu.WorldToScreen(entVelocity, velPos2D, VMatrix))
+					gpu.DrawLine(velPos2D, playerPos2D, color);
 			}
 		}
 		catch (Entity::EntityException& e) {
@@ -241,8 +193,7 @@ void Cheat::DrawESP() {
 	}
 }
 
-// Offsets(Pointers) Initalizer
-void Entity::init() {
+void ClientModule::Player::init() {
 	// Update Offsets
 	m_iHealth = (int*)((uintptr_t)base + netvars::m_iHealth);
 	m_iTeamNum = (int*)((uintptr_t)base + netvars::m_iTeamNum);
@@ -254,21 +205,8 @@ void Entity::init() {
 	m_vecOrigin = (Vec3*)((uintptr_t)base + netvars::m_vecOrigin);
 	m_ArmorValue = (int*)((uintptr_t)base + netvars::m_ArmorValue);
 	m_angEyeAngles = (Vec2*)((uintptr_t)base + netvars::m_angEyeAnglesX);
-	// Update Weapon ID
-	curWeapon.crosshairEntityId = (int*)((uintptr_t)base + netvars::m_iCrosshairId);
-}
-void ClientModule::Player::init() {
-	// Update Offsets
-	m_iHealth = (int*)(*base + netvars::m_iHealth);
-	m_iTeamNum = (int*)(*base + netvars::m_iTeamNum);
-	m_fFlags = (DWORD*)(*base + netvars::m_fFlags);
-	m_iShotsFired = (int*)(*base + netvars::m_iShotsFired);
-	m_vecVelocity = (Vec3*)(*base + netvars::m_vecVelocity);
-	m_aimPunchAngle = (ViewAngle*)(*base + netvars::m_aimPunchAngle);
-	m_dwBoneMatrix = (DWORD*)((uintptr_t)base + netvars::m_dwBoneMatrix);
-	m_bDormant = (bool*)((uintptr_t)base + signatures::m_bDormant);
-	m_vecOrigin = (Vec3*)((uintptr_t)base + netvars::m_vecOrigin);
-	m_ArmorValue = (int*)((uintptr_t)base + netvars::m_ArmorValue);
+	m_vecViewOffset = (Vec3*)((uintptr_t)base + netvars::m_vecViewOffset);
+	m_aimPunchAngle = (ViewAngle*)((uintptr_t)base + netvars::m_aimPunchAngle);
 	// Update Weapon ID
 	curWeapon.crosshairEntityId = (int*)(*base + netvars::m_iCrosshairId);
 }

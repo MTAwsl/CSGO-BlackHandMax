@@ -156,6 +156,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Aimbot.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\exception.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
@@ -164,6 +166,7 @@
     <ClCompile Include="src\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes\Aimbot.h" />
     <ClInclude Include="includes\csgo.h" />
     <ClInclude Include="includes\exception.h" />
     <ClInclude Include="includes\Game.h" />
@@ -172,6 +175,10 @@
     <ClInclude Include="includes\Settings.h" />
     <ClInclude Include="includes\stdafx.h" />
     <ClInclude Include="includes\types.h" />
+    <ClInclude Include="includes\Entity.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="todo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

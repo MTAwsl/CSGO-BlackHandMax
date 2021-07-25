@@ -1,0 +1,11 @@
+- Aimbot
+- TraceRay calling
+
+var list:
+	- player EyePosition
+	- weapon recoilMagnitude
+	- weapon recoveryTimeStand
+	- weapon cycletime
+	- eneity gunGameImmunity
+	- weapon nextPrimaryAttack
+	- weapon isSniperRifle isScoped

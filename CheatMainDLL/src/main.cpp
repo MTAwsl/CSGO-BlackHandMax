@@ -17,45 +17,54 @@ HRESULT APIENTRY Graphics::hkEndScene(LPDIRECT3DDEVICE9 o_pDevice) {
 }
 
 void MainThread(HINSTANCE hModule) {
+    FILE* f = nullptr;
     try {
         if (!AllocConsole()) throw BHException(__LINE__, __FILE__, (HRESULT)GetLastError());
-        FILE* f;
         errno_t errnum = freopen_s(&f, "CONOUT$", "w", stdout);
         if (errnum != 0) throw BHException(__LINE__, __FILE__, (HRESULT)errnum);
-        Cheat Hax;
-        Cheat* pHax = &Hax;
+        try {
+            Cheat Hax;
+            Cheat* pHax = &Hax;
 
-        std::cout << "-------- [HAX Logging] -------" << std::endl;
-        while (!(GetAsyncKeyState(VK_ESCAPE) & 0x1)) {
-            // Address Relocation
-            pHax->modClient.init();
-            pHax->modEngine.init();
-            pHax->modClient.localPlayer.init();
+            std::cout << "-------- [HAX Logging] -------" << std::endl;
+            while (!(GetAsyncKeyState(VK_ESCAPE) & 0x1)) {
+                // Address Relocation
+                pHax->modClient.init();
+                pHax->modEngine.init();
+                pHax->modClient.localPlayer.init();
 
-            // Keypad Handler
-            pHax->settings.UpdateKey();
-            // Hax Handler
-            if (pHax->settings.isBhopOn)
-                pHax->HandleBunnyhop();
-            if (pHax->settings.isTriggerbotOn)
-                pHax->HandleTriggerbot();
-            if (pHax->settings.isRCSOn)
-                pHax->HandleRCS();
+                // Keypad Handler
+                pHax->settings.UpdateKey();
+                // Hax Handler
+                if (pHax->settings.isBhopOn)
+                    pHax->HandleBunnyhop();
+                if (pHax->settings.isTriggerbotOn)
+                    pHax->HandleTriggerbot();
+                if (pHax->settings.isAimbotOn)
+                    pHax->Aimbot.run();
+                else if (pHax->settings.isRCSOn)
+                    pHax->HandleRCS();
 
-            // Reset bitfield
-            static DWORD lastResetTime = 0;
-            if (GetTickCount() - lastResetTime >= 100) {
-                pHax->modClient.Reset();
-                lastResetTime = GetTickCount();
+
+                // Reset bitfield
+                static DWORD lastResetTime = 0;
+                if (GetTickCount() - lastResetTime >= 100) {
+                    pHax->modClient.Reset();
+                    lastResetTime = GetTickCount();
+                }
             }
         }
-        if (f)
-            fclose(f);
-        if (!FreeConsole()) throw BHException(__LINE__, __FILE__, GetLastError());
+        catch (BHException& e) {
+            throw e;
+        }
     }
     catch (BHException& e) {
         e.Report();
     }
+    if (f)
+        fclose(f);
+    if (!FreeConsole()) throw BHException(__LINE__, __FILE__, GetLastError());
+    Sleep(200);
     FreeLibraryAndExitThread(hModule, 0);
     CloseHandle(hModule);
 }

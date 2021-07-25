@@ -9,6 +9,7 @@ public:
 	bool isTriggerbotOn = false;
 	bool isBhopOn = false;
 	bool isSnaplineOn = false;
+	bool isAimbotOn = false;
 	unsigned int espMode = 0;
 public:
 	int key_RCS = VK_INSERT;
@@ -16,6 +17,7 @@ public:
 	int key_Bhop = VK_PAUSE;
 	int key_ESP = VK_HOME;
 	int key_Snapline = VK_PRIOR;
+	int key_Aimbot = VK_CAPITAL;
 public:
 	void UpdateKey();
 };
