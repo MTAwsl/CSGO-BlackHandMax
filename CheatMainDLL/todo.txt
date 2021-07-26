@@ -1,5 +1,6 @@
 - Aimbot
 - TraceRay calling
+- Advanced DLL Injector
 
 var list:
 	- player EyePosition

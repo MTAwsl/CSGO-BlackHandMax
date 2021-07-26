@@ -38,9 +38,7 @@ int main(int argc, char** argv)
 
 	return EXIT_SUCCESS;
 }
-//-----------------------------------------------------------
-// Get Process ID by its name
-//-----------------------------------------------------------
+
 int getProcID(const string& p_name)
 {
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -65,9 +63,7 @@ int getProcID(const string& p_name)
 	return 0;
 
 }
-//-----------------------------------------------------------
-// Inject DLL to target process
-//-----------------------------------------------------------
+
 bool InjectDLL(const int& pid, const string& DLL_Path)
 {
 	long dll_size = DLL_Path.length() + 1;
@@ -113,10 +109,22 @@ bool InjectDLL(const int& pid, const string& DLL_Path)
 
 	return false;
 }
-//-----------------------------------------------------------
-// Usage help
-//-----------------------------------------------------------
+
 void usage()
 {
-	cout << "Usage: DLL_Injector.exe <Process name | Process ID> <DLL Path to Inject>" << endl;
+	cout << "\
+Usage: DLL_Injector.exe -<InjectMode> -<ExecuteMode> <Process name | Process ID> <DLL Path to Inject>\n\
+\n\
+InjectModes:\n\
+0 - LoadLibraryA\n\
+1 - LdrLoadDll\n\
+2 - LdrpLoadDLL\n\
+3 - ManualMapping\n\
+\n\
+ExecuteModes:\n\
+0 - CreateThread\n\
+1 - Thread Hijacking\n\
+2 - SetWindowsHookEx\n\
+3 - QueueUserAPC\n\
+" << endl;
 }
