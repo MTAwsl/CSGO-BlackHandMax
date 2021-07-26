@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "exception.h"
+#include "Exception.h"
 
 BHException::BHException(int line, const char* file, HRESULT hr) : line(line), file(file), hr(hr), type(WindowsError) {
 	std::stringstream result;

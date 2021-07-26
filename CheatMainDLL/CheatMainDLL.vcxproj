@@ -158,9 +158,10 @@
   <ItemGroup>
     <ClCompile Include="src\Aimbot.cpp" />
     <ClCompile Include="src\Entity.cpp" />
-    <ClCompile Include="src\exception.cpp" />
-    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Exception.cpp" />
+    <ClCompile Include="src\Module.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
+    <ClCompile Include="src\Hack.cpp" />
     <ClCompile Include="src\Hook.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Settings.cpp" />
@@ -168,9 +169,10 @@
   <ItemGroup>
     <ClInclude Include="includes\Aimbot.h" />
     <ClInclude Include="includes\csgo.h" />
-    <ClInclude Include="includes\exception.h" />
-    <ClInclude Include="includes\Game.h" />
+    <ClInclude Include="includes\Exception.h" />
+    <ClInclude Include="includes\Module.h" />
     <ClInclude Include="includes\Graphics.h" />
+    <ClInclude Include="includes\Hack.h" />
     <ClInclude Include="includes\Hook.h" />
     <ClInclude Include="includes\Settings.h" />
     <ClInclude Include="includes\stdafx.h" />

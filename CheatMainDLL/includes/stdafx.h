@@ -13,11 +13,12 @@
 #include <math.h>
 
 #include "exception.h"
-#include "Game.h"
+#include "Module.h"
 #include "Aimbot.h"
 #include "Hook.h"
 #include "Graphics.h"
 #include "Entity.h"
+#include "Hack.h"
 #pragma comment (lib,"d3d9.lib")
 #pragma comment (lib,"d3dx9.lib")
 

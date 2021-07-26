@@ -29,16 +29,18 @@ class ClientModule : public Module {
 public:
 	class Player : public Entity {
 	public:
-		Player(void* baseaddr);
+		Player(ClientModule* pClient);
 		void init(); // Initalize pointers
 	public:
 		// Player Operations
 		void Jump();
 		void Shoot();
+		void Rebase(void* ptr);
 	public:
 		ViewAngle GetAimPunchAngle() const;
 	private:
 		ViewAngle* m_aimPunchAngle = nullptr;
+		ClientModule* pClientMod;
 	};
 public:
 	ClientModule();
@@ -74,21 +76,4 @@ private:
 	ViewAngle* dwClientState_ViewAngles = nullptr;
 private:
 	friend class ClientModule;
-};
-
-class Cheat
-{
-public:
-	Cheat();
-	void HandleTriggerbot();
-	void HandleRCS();
-	void HandleBunnyhop();
-	void DrawESP();
-public:
-	Aimbot Aimbot;
-public:
-	ClientModule modClient;
-	EngineModule modEngine;
-	Graphics gpu;
-	Settings settings;
 };
