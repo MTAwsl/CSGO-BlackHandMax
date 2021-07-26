@@ -6,7 +6,7 @@ class BHException : public std::exception {
 public:
 	BHException(int line, const char* file, HRESULT hr);
 	BHException(int line, const char* file, const char* err);
-	const char* what() const noexcept;
+	const char* what() const noexcept override;
 	virtual const char* GetType() const noexcept;
 	int GetLine() const noexcept;
 	std::string GetFile() const noexcept;

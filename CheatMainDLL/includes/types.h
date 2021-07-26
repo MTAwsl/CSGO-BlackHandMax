@@ -18,6 +18,9 @@ struct Vec3 {
 	Vec3 operator*(float d) {
 		return { x * d, y * d, z * d };
 	}
+	Vec3 operator/(float d) {
+		return { x / d, y / d, z / d };
+	}
 };
 
 typedef struct ViewAngleVec3 {
@@ -31,6 +34,9 @@ typedef struct ViewAngleVec3 {
 	}
 	ViewAngleVec3 operator*(float d) {
 		return { x * d, y * d, z * d };
+	}
+	ViewAngleVec3 operator/(float d) {
+		return { x / d, y / d, z / d };
 	}
 
 	ViewAngleVec3 Normalize() {

@@ -30,7 +30,7 @@ public:
 	class Player : public Entity {
 	public:
 		Player(ClientModule* pClient);
-		void init(); // Initalize pointers
+		void init() override; // Initalize pointers
 	public:
 		// Player Operations
 		void Jump();
@@ -46,7 +46,7 @@ public:
 	ClientModule();
 	Entity GetEntity(int index) const;
 	bool GetViewMatrix(float* VMatrix) const;
-	void init(); // Initalize pointers
+	void init() override; // Initalize pointers
 	void Reset(); // Reset Bitmasks
 public:
 	Player localPlayer; // Main Player Obj
@@ -68,7 +68,7 @@ private:
 class EngineModule : public Module {
 public:
 	EngineModule();
-	void init();
+	void init() override;
 	ViewAngle GetViewAngle() const;
 	void SetViewAngle(ViewAngle angle);
 private:

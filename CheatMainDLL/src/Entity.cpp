@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "Entity.h"
 #include "csgo.h"
-
 // Entity Classes
-Entity::Entity(void* baseparam) {
-	if (baseparam == nullptr) {
+Entity::Entity(void* baseparam, bool noWarnings) {
+	if (!noWarnings && baseparam == nullptr) {
 		throw EntityException(__LINE__, __FILE__, "The Entity constructor received nullptr for base address.", EntityException::errCodeEnum::EntityNotAvaliable);
 	}
 	base = (uintptr_t*)baseparam;

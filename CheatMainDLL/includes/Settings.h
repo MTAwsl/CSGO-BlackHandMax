@@ -20,5 +20,10 @@ public:
 	int key_Aimbot = VK_CAPITAL;
 public:
 	void UpdateKey();
+public:
+	struct {
+		bool friendlyFire = false;
+		float smoothness = 10.f;
+	} Aimbot;
 };
 

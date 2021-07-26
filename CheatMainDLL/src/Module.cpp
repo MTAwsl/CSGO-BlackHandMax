@@ -20,7 +20,7 @@ EngineModule::EngineModule() : Module(L"engine.dll") {}
 
 // Player Functions
 ClientModule::Player::Player(ClientModule* pClient) 
-try : pClientMod(pClient), Entity((uintptr_t*)*(uintptr_t*)(pClientMod->GetModuleBase() + signatures::dwLocalPlayer)) {}
+try : pClientMod(pClient), Entity((uintptr_t*)*(uintptr_t*)(pClient->GetModuleBase() + signatures::dwLocalPlayer), true) {}
 catch (Entity::EntityException& e) {
 	if (e.errCode != e.EntityNotAvaliable)
 		throw e;
@@ -61,21 +61,8 @@ void EngineModule::SetViewAngle(ViewAngle angle) {
 }
 
 void ClientModule::Player::init() {
-	// Update Offsets
-	m_iHealth = (int*)((uintptr_t)base + netvars::m_iHealth);
-	m_iTeamNum = (int*)((uintptr_t)base + netvars::m_iTeamNum);
-	m_fFlags = (DWORD*)((uintptr_t)base + netvars::m_fFlags);
-	m_iShotsFired = (int*)((uintptr_t)base + netvars::m_iShotsFired);
-	m_vecVelocity = (Vec3*)((uintptr_t)base + netvars::m_vecVelocity);
-	m_dwBoneMatrix = (DWORD*)((uintptr_t)base + netvars::m_dwBoneMatrix);
-	m_bDormant = (bool*)((uintptr_t)base + signatures::m_bDormant);
-	m_vecOrigin = (Vec3*)((uintptr_t)base + netvars::m_vecOrigin);
-	m_ArmorValue = (int*)((uintptr_t)base + netvars::m_ArmorValue);
-	m_angEyeAngles = (Vec2*)((uintptr_t)base + netvars::m_angEyeAnglesX);
-	m_vecViewOffset = (Vec3*)((uintptr_t)base + netvars::m_vecViewOffset);
+	Entity::init(); // call virtual base function
 	m_aimPunchAngle = (ViewAngle*)((uintptr_t)base + netvars::m_aimPunchAngle);
-	// Update Weapon ID
-	curWeapon.crosshairEntityId = (int*)(*base + netvars::m_iCrosshairId);
 }
 
 void ClientModule::Reset() {

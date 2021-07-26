@@ -3,7 +3,7 @@
 #include <Windows.h>
 class Entity {
 public:
-	Entity(void* baseparam);
+	Entity(void* baseparam, bool noWarnings = false);
 	virtual void init();
 public:
 	// fFlags states
@@ -62,8 +62,8 @@ public:
 		};
 	public:
 		EntityException(int line, const char* file, const char* err, errCodeEnum errcode);
-		const char* GetType() const noexcept;
-		std::string GetErrorString() const noexcept;
+		const char* GetType() const noexcept override;
+		std::string GetErrorString() const noexcept override;
 		errCodeEnum errCode;
 	};
 };
