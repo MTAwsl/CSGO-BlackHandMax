@@ -23,7 +23,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ManualMapping.h">
+    <ClInclude Include="includes\ManualMapping.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
