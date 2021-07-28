@@ -59,6 +59,21 @@ void Cheat::DrawESP() {
 			if (settings.isSnaplineOn)
 				gpu.DrawLine({ wndSize.x >> 1, wndSize.y + 10 }, playerPos2D, color); // >> 1 == / 2
 
+			if (settings.isESPTextOn) {
+				std::stringstream s1, s2;
+				s1 << ent.GetHealth();
+				s2 << ent.GetArmorValue();
+				std::string t1 = "hp: " + s1.str();
+				std::string t2 = "ap: " + s2.str();
+				char* healthMsg = (char*)t1.c_str();
+				char* armorMsg = (char*)t2.c_str();
+
+				gpu.DrawTextA(healthMsg, playerPos2D.x, playerPos2D.y, D3DCOLOR_ARGB(255, 255, 255, 255));
+				gpu.DrawTextA(armorMsg, playerPos2D.x, playerPos2D.y + 12, D3DCOLOR_ARGB(255, 255, 255, 255));
+
+				if (!ent.isHelmet())
+					gpu.DrawTextA("Helmet", playerPos2D.x, playerPos2D.y + 24, D3DCOLOR_ARGB(255, 255, 255, 255));
+			}
 			// Draw ESP 2D Square
 			if (settings.espMode == 1) {
 				Vec2Int lefttop = headPos2D;

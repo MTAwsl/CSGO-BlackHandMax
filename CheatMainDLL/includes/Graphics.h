@@ -14,6 +14,7 @@ public:
 	static bool initD3DDevice(LPDIRECT3DDEVICE9 o_pDevice);
 	bool DrawLine(Vec2Int startPoint, Vec2Int endPoint, D3DCOLOR color, unsigned int thickness=2);
 	bool DrawSquare(Vec2Int startPoint, Vec2Int endPoint, D3DCOLOR color, unsigned int thickness=2);
+	bool DrawTextA(const char* text, float x, float y, D3DCOLOR color);
 	bool WorldToScreen(Vec3 pos, Vec2Int& screen, float matrix[16]);
 	Vec3 TransformVec(Vec3 src, Vec2 ang, float l);
 private:
@@ -34,6 +35,7 @@ private:
 private:
 	static HWND hWnd;
 	static ID3DXLine* LineL;
+	static ID3DXFont* FontF;
 	static LPDIRECT3DDEVICE9 pDevice;
 	static RECT WndRect;
 	static struct WndSize {
@@ -46,6 +48,9 @@ private:
 	static BOOL CALLBACK enumWind(HWND handle, LPARAM lp);
 protected:
 	static fEndScene originalEndScene;
+	static WNDPROC originalWndProc;
 	static HRESULT APIENTRY hkEndScene(LPDIRECT3DDEVICE9 o_pDevice);
+	static LRESULT WINAPI hkWndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static void DrawImGui();
 	static std::mutex renderMutex;
 };

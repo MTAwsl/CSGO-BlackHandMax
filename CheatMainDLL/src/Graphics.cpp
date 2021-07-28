@@ -1,9 +1,17 @@
 #include "stdafx.h"
 #include <d3d9.h>
 
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 Cheat* Graphics::pHax = nullptr;
 RECT Graphics::WndRect = { 0,0,0,0 };
 struct Graphics::WndSize Graphics::WndSize = {0,0};
+fEndScene Graphics::originalEndScene = nullptr;
+WNDPROC Graphics::originalWndProc = nullptr;
+ID3DXLine* Graphics::LineL = nullptr;
+ID3DXFont* Graphics::FontF = nullptr;
+LPDIRECT3DDEVICE9 Graphics::pDevice = nullptr;
+HWND Graphics::hWnd = nullptr;
 std::mutex Graphics::renderMutex;
 
 Graphics::Graphics(Cheat* ptr) : D3DHook(D3DHook::D3DHook(this)) {
@@ -31,8 +39,10 @@ Graphics::D3DHook::D3DHook(Graphics* ptr){
 Graphics::D3DHook::~D3DHook() {
 	parentObj->renderMutex.lock();
 	UnHookEndScene();
+	SetWindowLongPtr(hWnd, GWL_WNDPROC, reinterpret_cast<LONG_PTR>(originalWndProc));
 	parentObj->renderMutex.unlock();
 	LineL->Release();
+	FontF->Release();
 }
 
 bool Graphics::D3DHook::GetD3D9VMT() {
@@ -72,7 +82,7 @@ void Graphics::D3DHook::UnHookEndScene() {
 bool Graphics::initD3DDevice(LPDIRECT3DDEVICE9 o_pDevice) {
 	Graphics::pDevice = o_pDevice;
 	D3DXCreateLine(o_pDevice, &Graphics::LineL);
-
+	D3DXCreateFont(pDevice, 14, 0, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Arial", &Graphics::FontF);
 	// Fix hWnd to the Direct3D window
 	D3DDEVICE_CREATION_PARAMETERS pp;
 	o_pDevice->GetCreationParameters(&pp);
@@ -80,7 +90,23 @@ bool Graphics::initD3DDevice(LPDIRECT3DDEVICE9 o_pDevice) {
 	GetWindowRect(hWnd, &WndRect);
 	WndSize.Width = WndRect.right - WndRect.left - 5;
 	WndSize.Height = WndRect.bottom - WndRect.top - 29;
+
+	// Init ImGui
+	originalWndProc = reinterpret_cast<WNDPROC>(SetWindowLongPtr(hWnd, GWL_WNDPROC, reinterpret_cast<LONG_PTR>(Graphics::hkWndProc)));
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+
+	ImGui_ImplWin32_Init(hWnd);
+	ImGui_ImplDX9_Init(o_pDevice);
+
 	return true;
+}
+
+LRESULT WINAPI Graphics::hkWndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		return true;
+
+	return CallWindowProc(originalWndProc, hWnd, uMsg, wParam, lParam);
 }
 
 HWND Graphics::GetProcessWindow() const { return hWnd; }
@@ -131,5 +157,16 @@ bool Graphics::DrawSquare(Vec2Int startPoint, Vec2Int endPoint, D3DCOLOR color, 
 	DrawLine(startPoint, { endPoint.x, startPoint.y }, color, thickness);
 	DrawLine(endPoint, { endPoint.x, startPoint.y }, color, thickness);
 	DrawLine(endPoint, { startPoint.x, endPoint.y }, color, thickness);
+	return true;
+}
+
+bool Graphics::DrawTextA(const char* text, float x, float y, D3DCOLOR color) {
+	RECT rect;
+
+	SetRect(&rect, x + 1, y + 1, x + 1, y + 1);
+	FontF->DrawTextA(NULL, text, -1, &rect, DT_CENTER | DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 0, 0));
+
+	SetRect(&rect, x, y, x, y);
+	FontF->DrawTextA(NULL, text, -1, &rect, DT_CENTER | DT_NOCLIP, color);
 	return true;
 }

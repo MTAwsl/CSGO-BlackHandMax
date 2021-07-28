@@ -13,7 +13,7 @@ void Aimbot::run() {
 			Vec3 headPos = playerEnt.GetBonePos(8);
 			Vec3 eyePos = pHax->modClient.localPlayer.GetEyePos();
 
-			if (!playerEnt.isValidPlayer() || playerEnt.GetBaseAddr() == pHax->modClient.localPlayer.GetBaseAddr()) continue;
+			if (!playerEnt.isValidPlayer() || playerEnt.GetBaseAddr() == pHax->modClient.localPlayer.GetBaseAddr() || playerEnt.GetBaseAddr() == pHax->modClient.GetEntity(0).GetBaseAddr()) continue;
 			if (pHax->settings.Aimbot.friendlyFire && playerEnt.GetTeamNum() == pHax->modClient.localPlayer.GetTeamNum()) continue; // Friendly Fire
 
 			ViewAngleVec3 targetAngle = { TODEG(atan2(-(headPos.z - eyePos.z), hypot(headPos.x - eyePos.x, headPos.y - eyePos.y))) , 

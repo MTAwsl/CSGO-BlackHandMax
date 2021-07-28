@@ -19,6 +19,9 @@
 #include "Graphics.h"
 #include "Entity.h"
 #include "Hack.h"
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_dx9.h"
+#include "../imgui/imgui_impl_win32.h"
 #pragma comment (lib,"d3d9.lib")
 #pragma comment (lib,"d3dx9.lib")
 

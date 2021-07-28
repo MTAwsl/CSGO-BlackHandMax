@@ -7,46 +7,49 @@ public:
 	virtual void init();
 public:
 	// fFlags states
-	bool isOnGround() const;
-	bool isCroughing() const;
-	bool isJumpingOutOfWater() const;
-	bool isOnTrain() const;
-	bool isStandingOnRain() const;
-	bool isFrozen() const;
-	bool isAtControls() const;
-	bool isClient() const;
-	bool isFakeClient() const;
-	bool isInWater() const;
-	// isDormant
-	bool isDormant() const;
+	bool isOnGround() const noexcept;
+	bool isCroughing() const noexcept;
+	bool isJumpingOutOfWater() const noexcept;
+	bool isOnTrain() const noexcept;
+	bool isStandingOnRain() const noexcept;
+	bool isFrozen() const noexcept;
+	bool isAtControls() const noexcept;
+	bool isClient() const noexcept;
+	bool isFakeClient() const noexcept;
+	bool isInWater() const noexcept;
+	// bool States
+	bool isHelmet() const noexcept;
+	bool isDormant() const noexcept;
 	// Custom states
-	bool isMoving() const;
-	bool isValidPlayer() const;
+	bool isMoving() const noexcept;
+	bool isValidPlayer() const noexcept;
 public:
-	uintptr_t GetBaseAddr() const;
-	unsigned int GetCurrentWeapon() const;
-	unsigned int GetCurrentCrosshair() const;
-	int GetShotsFired() const;
-	int GetHealth() const;
-	int GetTeamNum() const;
-	Vec3 GetPos() const;
-	Vec3 GetBonePos(int index) const;
-	Vec2 GetEyeAngle() const;
-	Vec3 GetVelocity() const;
-	Vec3 GetEyePos() const;
+	uintptr_t GetBaseAddr() const noexcept;
+	unsigned int GetCurrentWeapon() const noexcept;
+	unsigned int GetCurrentCrosshair() const noexcept;
+	int GetShotsFired() const noexcept;
+	int GetHealth() const noexcept;
+	int GetTeamNum() const noexcept;
+	int GetArmorValue() const noexcept;
+	Vec3 GetPos() const noexcept;
+	Vec3 GetBonePos(int index) const noexcept;
+	Vec2 GetEyeAngle() const noexcept;
+	Vec3 GetVelocity() const noexcept;
+	Vec3 GetEyePos() const noexcept;
 protected:
 	uintptr_t* base = nullptr;
 	int* m_iHealth = nullptr;
 	int* m_iTeamNum = nullptr;
-	DWORD* m_fFlags = nullptr;
 	int* m_iShotsFired = nullptr;
+	int* m_ArmorValue = nullptr;
+	DWORD* m_fFlags = nullptr;
+	DWORD* m_dwBoneMatrix = nullptr;
 	Vec3* m_vecVelocity = nullptr;
 	Vec3* m_vecViewOffset = nullptr;
 	Vec3* m_vecOrigin = nullptr;
 	Vec2* m_angEyeAngles = nullptr;
-	int* m_ArmorValue = nullptr;
-	DWORD* m_dwBoneMatrix = nullptr;
 	bool* m_bDormant = nullptr;
+	bool* m_bHasHelmet = nullptr;
 	class Weapon {
 	public:
 		unsigned int id = 0;

@@ -104,7 +104,3 @@ DWORD* ClientModule::dwForceAttack = nullptr;
 DWORD* ClientModule::dwForceJump = nullptr;
 DWORD* ClientModule::dwViewMatrix = nullptr;
 std::bitset<8> ClientModule::opMask = { 0 };
-fEndScene Graphics::originalEndScene = nullptr;
-ID3DXLine* Graphics::LineL = nullptr;
-LPDIRECT3DDEVICE9 Graphics::pDevice = nullptr;
-HWND Graphics::hWnd = nullptr;

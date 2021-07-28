@@ -10,14 +10,11 @@ public:
 	bool isBhopOn = false;
 	bool isSnaplineOn = false;
 	bool isAimbotOn = false;
-	unsigned int espMode = 0;
+	bool guiVisible = false;
+	bool isESPTextOn = false;
+	int espMode = 0;
 public:
-	int key_RCS = VK_INSERT;
-	int key_Triggerbot = VK_DELETE;
-	int key_Bhop = VK_PAUSE;
-	int key_ESP = VK_HOME;
-	int key_Snapline = VK_PRIOR;
-	int key_Aimbot = VK_CAPITAL;
+	int key_GUI = VK_INSERT;
 public:
 	void UpdateKey();
 public:
