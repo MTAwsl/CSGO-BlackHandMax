@@ -10,7 +10,7 @@ Hope you can learn something from it :>
   
 ![image-20210809223248334](screenshots/image-20210809223248334.png)  
   
-![image-20210809223420969](screenshots\image-20210809223420969.png)  
+![image-20210809223420969](screenshots/image-20210809223420969.png)  
   
 ## Credits  
 HazeDumper by frk1 (https://github.com/frk1/hazedumper-rs)  
